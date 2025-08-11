@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Image Loading Test - EventSphere</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .log { background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; }
+        .image-test { margin: 20px 0; }
+        .image-test img { max-width: 300px; border: 1px solid #ccc; margin: 10px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>🖼️ EventSphere Image Loading Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Backend Connection</h2>
+        <button onclick="testBackend()">Test Backend</button>
+        <div id="backendLog" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Events API</h2>
+        <button onclick="testEventsAPI()">Fetch Events</button>
+        <div id="eventsLog" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Image Loading</h2>
+        <button onclick="testImageLoading()">Test Images</button>
+        <div id="imageLog" class="log"></div>
+        <div id="imageTests" class="image-test"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Specific Poster URLs</h2>
+        <button onclick="testPosterURLs()">Test Poster URLs</button>
+        <div id="posterLog" class="log"></div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:3000';
+
+        function log(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = isError ? 'error' : 'success';
+            element.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span><br>`;
+            element.scrollTop = element.scrollHeight;
+        }
+
+        async function testBackend() {
+            log('backendLog', 'Testing backend connection...');
+            
+            try {
+                const response = await fetch(`${BASE_URL}/api/events`);
+                if (response.ok) {
+                    log('backendLog', '✅ Backend is accessible');
+                    log('backendLog', `Response status: ${response.status}`);
+                } else {
+                    log('backendLog', `❌ Backend error: ${response.status}`, true);
+                }
+            } catch (error) {
+                log('backendLog', `❌ Backend connection failed: ${error.message}`, true);
+            }
+        }
+
+        async function testEventsAPI() {
+            log('eventsLog', 'Fetching events from API...');
+            
+            try {
+                const response = await fetch(`${BASE_URL}/api/events`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const events = await response.json();
+                log('eventsLog', `✅ Fetched ${events.length} events`);
+                
+                // Log first few events with their poster URLs
+                events.slice(0, 5).forEach((event, index) => {
+                    log('eventsLog', `Event ${index + 1}: "${event.title}" - Poster: ${event.posterUrl || 'No poster'}`);
+                });
+                
+                // Check for events with basketball or debate in title
+                const basketballEvents = events.filter(e => e.title.toLowerCase().includes('basketball'));
+                const debateEvents = events.filter(e => e.title.toLowerCase().includes('debate'));
+                
+                if (basketballEvents.length > 0) {
+                    log('eventsLog', `🏀 Found ${basketballEvents.length} basketball events`);
+                    basketballEvents.forEach(event => {
+                        log('eventsLog', `  - "${event.title}" - Poster: ${event.posterUrl || 'No poster'}`);
+                    });
+                }
+                
+                if (debateEvents.length > 0) {
+                    log('eventsLog', `🎭 Found ${debateEvents.length} debate events`);
+                    debateEvents.forEach(event => {
+                        log('eventsLog', `  - "${event.title}" - Poster: ${event.posterUrl || 'No poster'}`);
+                    });
+                }
+                
+            } catch (error) {
+                log('eventsLog', `❌ Failed to fetch events: ${error.message}`, true);
+            }
+        }
+
+        async function testImageLoading() {
+            log('imageLog', 'Testing image loading...');
+            const imageTests = document.getElementById('imageTests');
+            imageTests.innerHTML = '';
+            
+            // Test some known poster files
+            const testImages = [
+                '/uploads/posters/poster-1754671935288-294502541.jpg',
+                '/uploads/posters/poster-1754672021972-506935145.jpg',
+                '/uploads/posters/poster-1754681657796-723199460.jpeg'
+            ];
+            
+            testImages.forEach((imagePath, index) => {
+                const img = document.createElement('img');
+                img.src = `${BASE_URL}${imagePath}`;
+                img.alt = `Test Image ${index + 1}`;
+                img.onload = () => {
+                    log('imageLog', `✅ Image loaded: ${imagePath}`);
+                };
+                img.onerror = () => {
+                    log('imageLog', `❌ Image failed to load: ${imagePath}`, true);
+                };
+                imageTests.appendChild(img);
+            });
+        }
+
+        async function testPosterURLs() {
+            log('posterLog', 'Testing poster URLs from events...');
+            
+            try {
+                const response = await fetch(`${BASE_URL}/api/events`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const events = await response.json();
+                const eventsWithPosters = events.filter(e => e.posterUrl);
+                
+                log('posterLog', `Found ${eventsWithPosters.length} events with posters out of ${events.length} total events`);
+                
+                // Test first few poster URLs
+                eventsWithPosters.slice(0, 3).forEach((event, index) => {
+                    const fullUrl = `${BASE_URL}${event.posterUrl}`;
+                    log('posterLog', `Testing poster ${index + 1}: ${fullUrl}`);
+                    
+                    // Create a test image element
+                    const img = document.createElement('img');
+                    img.src = fullUrl;
+                    img.style.width = '100px';
+                    img.style.height = '60px';
+                    img.style.objectFit = 'cover';
+                    img.style.border = '1px solid #ccc';
+                    img.style.margin = '5px';
+                    
+                    img.onload = () => {
+                        log('posterLog', `✅ Poster loads: ${event.title}`);
+                    };
+                    img.onerror = () => {
+                        log('posterLog', `❌ Poster fails: ${event.title} - ${fullUrl}`, true);
+                    };
+                    
+                    document.getElementById('posterLog').appendChild(img);
+                });
+                
+            } catch (error) {
+                log('posterLog', `❌ Failed to test poster URLs: ${error.message}`, true);
+            }
+        }
+
+        // Auto-test backend on page load
+        window.addEventListener('load', () => {
+            testBackend();
+        });
+    </script>
+</body>
+</html>

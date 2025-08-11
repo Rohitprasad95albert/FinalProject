@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simple Test - EventSphere</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .log { background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; }
+        input, select { padding: 8px; margin: 5px; border: 1px solid #ccc; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 EventSphere Registration/Login Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Registration</h2>
+        <input type="text" id="testName" placeholder="Name" value="Test Club Organizer">
+        <input type="email" id="testEmail" placeholder="Email" value="testclub@example.com">
+        <input type="password" id="testPassword" placeholder="Password" value="testpass123">
+        <select id="testRole">
+            <option value="student">Student</option>
+            <option value="club" selected>Club Organizer</option>
+            <option value="admin">Admin</option>
+        </select>
+        <button onclick="testRegistration()">Test Registration</button>
+        <div id="registrationLog" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Login</h2>
+        <input type="email" id="loginEmail" placeholder="Email" value="testclub@example.com">
+        <input type="password" id="loginPassword" placeholder="Password" value="testpass123">
+        <button onclick="testLogin()">Test Login</button>
+        <div id="loginLog" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Role-Based Redirect</h2>
+        <button onclick="testRedirect('student')">Test Student Redirect</button>
+        <button onclick="testRedirect('club')">Test Club Redirect</button>
+        <button onclick="testRedirect('admin')">Test Admin Redirect</button>
+        <div id="redirectLog" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Check localStorage</h2>
+        <button onclick="checkLocalStorage()">Check localStorage</button>
+        <div id="localStorageLog" class="log"></div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:3000';
+
+        function log(elementId, message) {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            element.innerHTML += `[${timestamp}] ${message}<br>`;
+            element.scrollTop = element.scrollHeight;
+        }
+
+        async function testRegistration() {
+            const name = document.getElementById('testName').value;
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            const role = document.getElementById('testRole').value;
+
+            log('registrationLog', `Starting registration test...`);
+            log('registrationLog', `Name: ${name}`);
+            log('registrationLog', `Email: ${email}`);
+            log('registrationLog', `Role: ${role} (type: ${typeof role})`);
+
+            try {
+                const response = await fetch(`${BASE_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password, role })
+                });
+
+                log('registrationLog', `Response status: ${response.status}`);
+                
+                const data = await response.json();
+                log('registrationLog', `Response data: ${JSON.stringify(data, null, 2)}`);
+
+                if (response.ok) {
+                    log('registrationLog', '✅ Registration successful!');
+                } else {
+                    log('registrationLog', `❌ Registration failed: ${data.error}`);
+                }
+            } catch (error) {
+                log('registrationLog', `❌ Error: ${error.message}`);
+            }
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            log('loginLog', `Starting login test...`);
+            log('loginLog', `Email: ${email}`);
+
+            try {
+                const response = await fetch(`${BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                log('loginLog', `Response status: ${response.status}`);
+                
+                const data = await response.json();
+                log('loginLog', `Response data: ${JSON.stringify(data, null, 2)}`);
+
+                if (response.ok) {
+                    log('loginLog', '✅ Login successful!');
+                    log('loginLog', `User role: ${data.user.role} (type: ${typeof data.user.role})`);
+                    
+                    // Store in localStorage
+                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("userId", data.user._id);
+                    localStorage.setItem("role", data.user.role);
+                    localStorage.setItem("name", data.user.name);
+                    localStorage.setItem("email", data.user.email);
+                    
+                    log('loginLog', '✅ Data stored in localStorage');
+                } else {
+                    log('loginLog', `❌ Login failed: ${data.error}`);
+                }
+            } catch (error) {
+                log('loginLog', `❌ Error: ${error.message}`);
+            }
+        }
+
+        function testRedirect(role) {
+            log('redirectLog', `Testing redirect for role: ${role}`);
+            
+            // Test the same logic as in login.html
+            const cleanRole = role ? role.trim().toLowerCase() : 'student';
+            log('redirectLog', `Clean role: ${cleanRole}`);
+            
+            if (cleanRole === "admin") {
+                log('redirectLog', '🎯 Would redirect to: admin-dashboard.html');
+            } else if (cleanRole === "club") {
+                log('redirectLog', '🎯 Would redirect to: club-dashboard.html');
+            } else {
+                log('redirectLog', '🎯 Would redirect to: student-dashboard.html');
+            }
+        }
+
+        function checkLocalStorage() {
+            log('localStorageLog', 'Checking localStorage...');
+            log('localStorageLog', `Token: ${localStorage.getItem("token") ? 'Present' : 'Missing'}`);
+            log('localStorageLog', `User ID: ${localStorage.getItem("userId") || 'Missing'}`);
+            log('localStorageLog', `Role: ${localStorage.getItem("role") || 'Missing'}`);
+            log('localStorageLog', `Name: ${localStorage.getItem("name") || 'Missing'}`);
+            log('localStorageLog', `Email: ${localStorage.getItem("email") || 'Missing'}`);
+        }
+
+        // Check if backend is accessible
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${BASE_URL}/api/auth/debug/user/test@example.com`);
+                log('registrationLog', '✅ Backend server is accessible');
+            } catch (error) {
+                log('registrationLog', '❌ Backend server is not accessible. Make sure it\'s running on port 3000');
+            }
+        });
+    </script>
+</body>
+</html>

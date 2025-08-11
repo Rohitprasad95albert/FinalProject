@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Attendance - EventSphere</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { primary:'#2563EB', secondary:'#FACC15', accent:'#22C55E', background:'#F9FAFB', text:'#111827' }, animation:{'fade-in':'fadeIn .6s','slide-up':'slideUp .5s'}, keyframes:{ fadeIn:{'0%':{opacity:'0'},'100%':{opacity:'1'}}, slideUp:{'0%':{transform:'translateY(20px)',opacity:'0'},'100%':{transform:'translateY(0)',opacity:'1'}} } } } };
+  </script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    .gradient-text{background:linear-gradient(135deg,#2563EB 0%,#22C55E 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .gradient-bg{background:linear-gradient(135deg,#2563EB 0%,#22C55E 100%)}
+    .glass-effect{backdrop-filter:blur(10px);background:rgba(255,255,255,.9)}
+    .card-hover{transition:all .3s ease}
+    .card-hover:hover{transform:translateY(-5px);box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04)}
+  </style>
+</head>
+<body class="bg-background text-text min-h-screen">
+    <nav id="navbar-container" class="fixed top-0 w-full z-50 glass-effect border-b border-gray-200"></nav>
+
+    <main class="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-lg p-8 card-hover">
+          <h2 class="text-2xl font-bold text-center mb-6 gradient-text" id="event-title">Loading Event...</h2>
+          <form id="attendance-form" class="space-y-4 hidden">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2" for="studentName">Full Name</label>
+              <input type="text" id="studentName" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent" required />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2" for="studentEmail">Email</label>
+              <input type="email" id="studentEmail" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent" required />
+            </div>
+            <div id="question-area" class="mb-2 hidden"></div>
+            <button type="submit" class="w-full gradient-bg text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105">Submit Attendance</button>
+            <p id="message" class="mt-3 text-center hidden"></p>
+          </form>
+          <p id="loading-message" class="text-center text-gray-500"></p>
+        </div>
+      </div>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script src="config.js"></script>
+    <script>
+        const qrId = new URLSearchParams(window.location.search).get('qrId');
+        const titleEl = document.getElementById('event-title');
+        const formEl = document.getElementById('attendance-form');
+        const loadingEl = document.getElementById('loading-message');
+        const msgEl = document.getElementById('message');
+
+        async function setupPage() {
+            console.log('QR Attendance Page - qrId:', qrId);
+            console.log('BASE_URL:', BASE_URL);
+            
+            if (!qrId || qrId === 'undefined') {
+                titleEl.innerText = "Error";
+                loadingEl.className = 'text-center text-red-600';
+                loadingEl.innerText = "Invalid or missing QR Code ID.";
+                return;
+            }
+            try {
+                const res = await fetch(`${BASE_URL}/api/events`);
+                const events = await res.json();
+                const event = events.find(e => e.qrCodeId === qrId && e.status === 'approved');
+                
+                if (!event) {
+                    throw new Error('Event not found or not active.');
+                }
+                
+                titleEl.innerText = `Attendance for: ${event.title}`;
+                if (event.attendanceQuestion?.question) {
+                    const qa = document.getElementById('question-area');
+                    qa.classList.remove('hidden');
+                    qa.innerHTML = `<h5 class="mb-3 font-semibold">${event.attendanceQuestion.question}</h5>` +
+                        event.attendanceQuestion.options.map((opt, i) => `
+                        <label class="flex items-center space-x-3 py-1">
+                            <input class="w-4 h-4" type="radio" name="answer" id="opt${i}" value="${opt}" required>
+                            <span>${opt}</span>
+                        </label>`).join('');
+                }
+                loadingEl.classList.add('hidden');
+                formEl.classList.remove('hidden');
+            } catch (error) {
+                titleEl.innerText = "Error";
+                loadingEl.className = 'text-center text-red-600';
+                loadingEl.innerText = error.message;
+            }
+        }
+
+        formEl.addEventListener('submit', async e => {
+            e.preventDefault();
+            const name = document.getElementById('studentName').value;
+            const email = document.getElementById('studentEmail').value;
+            const answer = document.querySelector('input[name="answer"]:checked')?.value || '';
+            msgEl.classList.add('hidden');
+            
+            try {
+                const res = await fetch(`${BASE_URL}/api/events/${qrId}/qr-attendance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, answer })
+                });
+                const result = await res.json();
+                if (!res.ok) throw new Error(result.error);
+                
+                msgEl.className = 'text-green-600'; msgEl.innerText = result.message;
+                msgEl.classList.remove('hidden');
+                formEl.classList.add('hidden');
+            } catch (error) {
+                msgEl.className = 'text-red-600'; msgEl.innerText = error.message;
+                msgEl.classList.remove('hidden');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', setupPage);
+    </script>
+    <script src="navbar.js"></script>
+    <script src="footer.js"></script>
+</body>
+</html>

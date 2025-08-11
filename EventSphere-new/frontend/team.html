@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Our Team - EventSphere</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { 
+      theme: { 
+        extend: { 
+          colors: { 
+            primary: '#2563EB', 
+            secondary: '#FACC15', 
+            accent: '#22C55E', 
+            background: '#F9FAFB', 
+            text: '#111827' 
+          }, 
+          animation: { 
+            'fade-in': 'fadeIn 0.6s ease-in-out', 
+            'slide-up': 'slideUp 0.5s ease-out' 
+          }, 
+          keyframes: { 
+            fadeIn: { 
+              '0%': { opacity: '0' }, 
+              '100%': { opacity: '1' } 
+            }, 
+            slideUp: { 
+              '0%': { transform: 'translateY(20px)', opacity: '0' }, 
+              '100%': { transform: 'translateY(0)', opacity: '1' } 
+            }, 
+          }, 
+        }, 
+      }, 
+    };
+  </script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    .gradient-text{background:linear-gradient(135deg,#2563EB 0%,#22C55E 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .gradient-bg{background:linear-gradient(135deg,#2563EB 0%,#22C55E 100%)}
+    .glass-effect{backdrop-filter:blur(10px);background:rgba(255,255,255,.9)}
+    .card-hover{transition:all .3s ease}
+    .card-hover:hover{transform:translateY(-6px);box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04)}
+  </style>
+</head>
+<body class="bg-background text-text min-h-screen">
+  <nav id="navbar-container" class="fixed top-0 w-full z-50 glass-effect border-b border-gray-200"></nav>
+
+  <main class="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <header class="text-center mb-12 animate-fade-in">
+        <h1 class="text-4xl sm:text-5xl font-bold gradient-text mb-3">Meet Our Team</h1>
+        <p class="text-gray-600 text-lg mb-6">The people behind EventSphere</p>
+        <div class="max-w-4xl mx-auto">
+          <p class="text-gray-700 leading-relaxed">
+            This project, EventSphere, is the result of the collaborative effort, dedication, and diverse skills of our six-member team. 
+            Each member played a crucial role in the project's lifecycle, from initial conception and design to backend development, 
+            frontend implementation, and final testing. Our success is a testament to our collective passion for technology and our commitment to teamwork.
+          </p>
+        </div>
+      </header>
+
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 animate-slide-up">
+        <!-- Team Member 1 -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 card-hover text-center">
+          <img src="images/team/rohit-kumar.jpg" alt="Rohit Kumar - Project Lead" class="w-28 h-28 rounded-full mx-auto mb-4 object-cover border-4 border-gray-100 shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-gray-100 shadow-lg bg-gradient-to-br from-blue-400 to-green-400 flex items-center justify-center" style="display: none;">
+            <span class="text-white font-bold text-lg">RK</span>
+          </div>
+          <h3 class="text-xl font-bold">Rohit Kumar</h3>
+          <p class="text-primary font-medium">Project Lead & Full-Stack Developer</p>
+          <p class="text-gray-600 mt-2">Led the project's architecture and vision. Developed core backend logic, user authentication system, and RESTful API structure while ensuring seamless integration between frontend and backend components.</p>
+        </div>
+
+        <!-- Team Member 2 -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 card-hover text-center">
+          <img src="images/team/ekta-saw.jpg" alt="Ekta Kumari - Frontend Lead" class="w-28 h-28 rounded-full mx-auto mb-4 object-cover border-4 border-gray-100 shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-gray-100 shadow-lg bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center" style="display: none;">
+            <span class="text-white font-bold text-lg">EK</span>
+          </div>
+          <h3 class="text-xl font-bold">Ekta Kumari</h3>
+          <p class="text-primary font-medium">Frontend Lead & UI/UX Specialist</p>
+          <p class="text-gray-600 mt-2">Took charge of user experience, translating project features into intuitive interfaces. Responsible for responsive layouts, design implementation, and ensuring the application is visually appealing and easy to navigate.</p>
+        </div>
+
+        <!-- Team Member 3 -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 card-hover text-center">
+          <img src="images/team/ranjeet-kumar.jpg" alt="Ranjeet Kumar - Backend Architect" class="w-28 h-28 rounded-full mx-auto mb-4 object-cover border-4 border-gray-100 shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-gray-100 shadow-lg bg-gradient-to-br from-orange-400 to-red-400 flex items-center justify-center" style="display: none;">
+            <span class="text-white font-bold text-lg">RK</span>
+          </div>
+          <h3 class="text-xl font-bold">Ranjeet Kumar</h3>
+          <p class="text-primary font-medium">Backend & Database Architect</p>
+          <p class="text-gray-600 mt-2">Designed and implemented MongoDB database schemas for Users, Events, and Feedback. Developed complex backend routes for event management and recommendation system, ensuring efficient and secure data interactions.</p>
+        </div>
+
+        <!-- Team Member 4 -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 card-hover text-center">
+          <img src="images/team/priya-saini.jpg" alt="Priya Saini - Frontend Developer" class="w-28 h-28 rounded-full mx-auto mb-4 object-cover border-4 border-gray-100 shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-gray-100 shadow-lg bg-gradient-to-br from-teal-400 to-blue-400 flex items-center justify-center" style="display: none;">
+            <span class="text-white font-bold text-lg">PS</span>
+          </div>
+          <h3 class="text-xl font-bold">Priya Saini</h3>
+          <p class="text-primary font-medium">Frontend Developer (Features)</p>
+          <p class="text-gray-600 mt-2">Responsible for bringing key features to life on the frontend. Developed dynamic event cards, interactive dashboards for all user roles, and JavaScript logic for real-time updates and user feedback.</p>
+        </div>
+
+        <!-- Team Member 5 -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 card-hover text-center">
+          <img src="images/team/ajeet-yadav.jpg" alt="Ajeet Yadav - Backend Specialist" class="w-28 h-28 rounded-full mx-auto mb-4 object-cover border-4 border-gray-100 shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-gray-100 shadow-lg bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center" style="display: none;">
+            <span class="text-white font-bold text-lg">AY</span>
+          </div>
+          <h3 class="text-xl font-bold">Ajeet Yadav</h3>
+          <p class="text-primary font-medium">Backend Specialist (Advanced Features)</p>
+          <p class="text-gray-600 mt-2">Tackled complex backend functionalities including secure QR code attendance system, dynamic PDF certificate generation, and Nodemailer service integration for all email communications.</p>
+        </div>
+
+        <!-- Team Member 6 -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 card-hover text-center">
+          <img src="images/team/arjun-kadam.jpg" alt="Arjun Kadam - QA Lead" class="w-28 h-28 rounded-full mx-auto mb-4 object-cover border-4 border-gray-100 shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="w-28 h-28 rounded-full mx-auto mb-4 border-4 border-gray-100 shadow-lg bg-gradient-to-br from-green-400 to-emerald-400 flex items-center justify-center" style="display: none;">
+            <span class="text-white font-bold text-lg">AK</span>
+          </div>
+          <h3 class="text-xl font-bold">Arjun Kadam</h3>
+          <p class="text-primary font-medium">QA Lead & Full-Stack Developer</p>
+          <p class="text-gray-600 mt-2">Ensured stability and quality of the application through thorough testing of all features, identifying and documenting bugs, and fixing issues across both frontend and backend components.</p>
+        </div>
+      </section>
+
+      <!-- Team Values Section -->
+      <section class="mt-16 animate-slide-up">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-bold gradient-text mb-4">Our Values</h2>
+          <p class="text-gray-600">What drives us to deliver excellence</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-2xl shadow-lg p-6 text-center">
+            <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="bi bi-people text-white text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Collaboration</h3>
+            <p class="text-gray-600">We believe in the power of teamwork and diverse perspectives to create innovative solutions.</p>
+          </div>
+          
+          <div class="bg-white rounded-2xl shadow-lg p-6 text-center">
+            <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="bi bi-lightbulb text-white text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Innovation</h3>
+            <p class="text-gray-600">We constantly push boundaries to deliver cutting-edge features and exceptional user experiences.</p>
+          </div>
+          
+          <div class="bg-white rounded-2xl shadow-lg p-6 text-center">
+            <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="bi bi-award text-white text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Quality</h3>
+            <p class="text-gray-600">We maintain the highest standards in our code, design, and user experience to deliver reliable solutions.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+  <script src="config.js"></script>
+  <script src="navbar.js"></script>
+  <script src="footer.js"></script>
+</body>
+</html>

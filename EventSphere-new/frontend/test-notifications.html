@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Notifications - EventSphere</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #2563EB 0%, #22C55E 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 glass-effect border-b border-gray-200 transition-all duration-300" id="navbar-container">
+        <!-- Navbar content will be injected here -->
+    </nav>
+
+    <!-- Test Content -->
+    <div class="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold mb-8 text-center">Notification System Test</h1>
+            
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">Test Controls</h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <button onclick="testLoadNotifications()" 
+                                class="gradient-bg text-white px-6 py-2 rounded-md hover:opacity-90 transition-opacity mr-4">
+                            Load Notifications
+                        </button>
+                        <button onclick="testGetUnreadCount()" 
+                                class="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors mr-4">
+                            Get Unread Count
+                        </button>
+                        <button onclick="testUpdateBadge()" 
+                                class="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition-colors">
+                            Update Badge
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <button onclick="testMarkAllRead()" 
+                                class="bg-purple-500 text-white px-6 py-2 rounded-md hover:bg-purple-600 transition-colors mr-4">
+                            Mark All Read
+                        </button>
+                        <button onclick="testCreateTestNotification()" 
+                                class="bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600 transition-colors">
+                            Create Test Notification
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">Debug Information</h2>
+                <div id="debugInfo" class="text-sm text-gray-600">
+                    <p>Click the buttons above to test the notification system...</p>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4">Current State</h2>
+                <div id="currentState" class="text-sm text-gray-600">
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="notificationSystem.js"></script>
+    <script src="navbar.js"></script>
+
+    <script>
+        function updateDebugInfo(message) {
+            const debugInfo = document.getElementById('debugInfo');
+            const timestamp = new Date().toLocaleTimeString();
+            debugInfo.innerHTML = `<p>[${timestamp}] ${message}</p>` + debugInfo.innerHTML;
+        }
+
+        function updateCurrentState() {
+            const currentState = document.getElementById('currentState');
+            const token = localStorage.getItem('token');
+            const notificationSystem = window.notificationSystem;
+            
+            let state = `
+                <p><strong>Token:</strong> ${token ? 'Present' : 'Missing'}</p>
+                <p><strong>Notification System:</strong> ${notificationSystem ? 'Initialized' : 'Not initialized'}</p>
+            `;
+            
+            if (notificationSystem) {
+                state += `
+                    <p><strong>Notifications Count:</strong> ${notificationSystem.notifications.length}</p>
+                    <p><strong>Unread Count:</strong> ${notificationSystem.unreadCount}</p>
+                    <p><strong>Is Initialized:</strong> ${notificationSystem.isInitialized}</p>
+                `;
+            }
+            
+            currentState.innerHTML = state;
+        }
+
+        async function testLoadNotifications() {
+            updateDebugInfo('Testing loadNotifications...');
+            if (window.notificationSystem) {
+                await window.notificationSystem.loadNotifications();
+                updateDebugInfo(`Loaded ${window.notificationSystem.notifications.length} notifications`);
+            } else {
+                updateDebugInfo('Notification system not available');
+            }
+            updateCurrentState();
+        }
+
+        async function testGetUnreadCount() {
+            updateDebugInfo('Testing getUnreadCount...');
+            if (window.notificationSystem) {
+                const count = await window.notificationSystem.getUnreadCount();
+                updateDebugInfo(`Unread count: ${count}`);
+            } else {
+                updateDebugInfo('Notification system not available');
+            }
+            updateCurrentState();
+        }
+
+        function testUpdateBadge() {
+            updateDebugInfo('Testing updateNotificationBadge...');
+            if (window.notificationSystem) {
+                window.notificationSystem.updateNotificationBadge();
+                updateDebugInfo('Badge updated');
+            } else {
+                updateDebugInfo('Notification system not available');
+            }
+            updateCurrentState();
+        }
+
+        async function testMarkAllRead() {
+            updateDebugInfo('Testing markAllAsRead...');
+            if (window.notificationSystem) {
+                await window.notificationSystem.markAllAsRead();
+                updateDebugInfo('All notifications marked as read');
+            } else {
+                updateDebugInfo('Notification system not available');
+            }
+            updateCurrentState();
+        }
+
+        async function testCreateTestNotification() {
+            updateDebugInfo('Creating test notification...');
+            if (window.notificationSystem) {
+                window.notificationSystem.showInAppNotification(
+                    'Test Notification',
+                    'This is a test notification to verify the system is working.',
+                    'info'
+                );
+                updateDebugInfo('Test notification created');
+            } else {
+                updateDebugInfo('Notification system not available');
+            }
+        }
+
+        // Update state every 2 seconds
+        setInterval(updateCurrentState, 2000);
+        
+        // Initial state update
+        setTimeout(updateCurrentState, 1000);
+    </script>
+</body>
+</html>
