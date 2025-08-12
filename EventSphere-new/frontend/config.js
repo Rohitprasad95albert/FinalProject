@@ -7,7 +7,7 @@
   const isLocalHost = /localhost|127\.0\.0\.1/.test(window.location.hostname);
   const isLocal = isFileProtocol || isLocalHost;
   const localUrl = 'http://localhost:3000';
-  const deployedUrl = 'https://event-projrct-1.onrender.com';
+  const deployedUrl = 'https://finalproject-2-52ka.onrender.com';
   const resolved = isLocal ? localUrl : deployedUrl;
   window.BASE_URL = resolved;
 })();
